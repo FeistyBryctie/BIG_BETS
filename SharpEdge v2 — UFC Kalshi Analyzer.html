@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<!-- saved from url=(0046)file:///Users/bryce/Downloads/sharpedge_3.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SharpEdge v2 — UFC Kalshi Analyzer</title>
+<link href="./SharpEdge v2 — UFC Kalshi Analyzer_files/css2" rel="stylesheet">
+<style>
+:root {
+  --bg:#07080c;--s1:#0c0e14;--s2:#111520;--b1:#1a2035;--b2:#243050;
+  --red:#e63946;--red-dim:rgba(230,57,70,0.15);
+  --gold:#f4a72a;--gold-dim:rgba(244,167,42,0.12);
+  --green:#2ecc71;--green-dim:rgba(46,204,113,0.12);
+  --blue:#4a9eff;--blue-dim:rgba(74,158,255,0.12);
+  --t1:#e8edf5;--t2:#7a8699;--t3:#333d52;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--bg);color:var(--t1);font-family:'DM Mono',monospace;min-height:100vh;}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 100px;}
+
+/* HEADER */
+.hdr{display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--b1);padding-bottom:16px;margin-bottom:0;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:5px;line-height:1;}
+.logo em{color:var(--red);font-style:normal;text-shadow:0 0 24px rgba(230,57,70,.5);}
+.logo-sub{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--t3);text-transform:uppercase;margin-top:3px;}
+.vtag{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--red);background:var(--red-dim);border:1px solid rgba(230,57,70,0.3);padding:3px 10px;border-radius:2px;}
+
+/* TICKER */
+.ticker{overflow:hidden;border-top:1px solid var(--b1);border-bottom:1px solid var(--b1);padding:8px 0;margin-bottom:0;background:var(--s1);}
+.ticker-track{display:flex;gap:40px;animation:ticker 30s linear infinite;white-space:nowrap;}
+.ticker-item{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:8px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--red);display:inline-block;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--b1);margin-bottom:24px;}
+.tab{padding:10px 20px;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+.tab:hover{color:var(--t2);}
+.tab.active{color:var(--t1);border-bottom-color:var(--red);}
+
+/* SECTION LABELS */
+.slabel{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:8px;margin-top:20px;}
+.slabel::after{content:'';flex:1;height:1px;background:var(--b1);}
+.slabel:first-child{margin-top:0;}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:4px;margin-bottom:16px;}
+.card-hdr{padding:10px 16px;border-bottom:1px solid var(--b1);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t2);text-transform:uppercase;}
+.card-body{padding:16px;}
+
+/* FORMS */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:12px;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;}
+input,select{background:var(--s2);border:1px solid var(--b1);border-radius:3px;color:var(--t1);font-family:'DM Mono',monospace;font-size:13px;padding:9px 12px;outline:none;transition:border-color .2s;width:100%;}
+input:focus,select:focus{border-color:var(--b2);}
+input::placeholder{color:var(--t3);}
+select option{background:var(--s2);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border:none;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn-primary{background:var(--red);color:#fff;}
+.btn-primary:hover{background:#ff4550;box-shadow:0 0 20px rgba(230,57,70,.3);}
+.btn-primary:disabled{background:var(--b1);color:var(--t3);cursor:not-allowed;box-shadow:none;}
+.btn-outline{background:transparent;color:var(--t2);border:1px solid var(--b2);}
+.btn-outline:hover{border-color:var(--t2);color:var(--t1);}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-gold:hover{background:#ffb940;}
+.btn-full{width:100%;justify-content:center;font-size:14px;padding:13px;}
+
+/* FIGHT DISPLAY */
+.fight-card{background:var(--s1);border:1px solid var(--b1);border-radius:4px;padding:20px;margin-bottom:16px;}
+.fighters-row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;margin-bottom:20px;}
+.fighter-block{text-align:center;}
+.fighter-name{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;line-height:1.1;margin-bottom:4px;}
+.fighter-name.rc{color:var(--red);}
+.fighter-name.bc{color:var(--blue);}
+.fighter-prob{font-family:'Bebas Neue',sans-serif;font-size:44px;line-height:1;}
+.fighter-prob.rc{color:var(--red);}
+.fighter-prob.bc{color:var(--blue);}
+.fighter-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;}
+.vs{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--t3);letter-spacing:3px;text-align:center;}
+.evname{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--t2);text-transform:uppercase;text-align:center;margin-top:4px;}
+
+/* ODDS GRID */
+.odds-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.odds-cell{background:var(--s2);border:1px solid var(--b1);border-radius:3px;padding:12px;text-align:center;}
+.odds-cell-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:6px;}
+.odds-cell-val{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;}
+.odds-cell-val.pos{color:var(--green);}
+.odds-cell-val.neg{color:var(--red);}
+.odds-cell-val.neu{color:var(--t1);}
+.odds-cell-sub{font-size:10px;color:var(--t3);margin-top:2px;}
+
+/* PROGRESS */
+.progress-steps{display:flex;margin-bottom:12px;}
+.step{flex:1;padding:7px 4px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--t3);border-bottom:2px solid var(--b1);transition:all .3s;}
+.step.active{color:var(--gold);border-bottom-color:var(--gold);}
+.step.done{color:var(--green);border-bottom-color:var(--green);}
+.phase-log{background:var(--s2);border:1px solid var(--b1);border-radius:3px;padding:12px;margin-bottom:16px;max-height:160px;overflow-y:auto;}
+.phase-entry{font-size:11px;color:var(--t3);padding:2px 0;display:flex;gap:8px;}
+.phase-entry.done .pi{color:var(--green);}
+.phase-entry.active{color:var(--t2);}
+.phase-entry.active .pi{color:var(--gold);}
+
+/* VERDICT */
+.verdict-card{background:var(--s2);border:1px solid var(--b2);border-radius:4px;padding:20px;margin-bottom:16px;}
+.verdict-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
+.verdict-lean{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;}
+.verdict-lean.rc{color:var(--red);}
+.verdict-lean.bc{color:var(--blue);}
+.verdict-lean.split{color:var(--gold);}
+.conf-score{font-family:'Bebas Neue',sans-serif;font-size:48px;line-height:1;}
+.conf-score.high{color:var(--green);}
+.conf-score.med{color:var(--gold);}
+.conf-score.low{color:var(--red);}
+.conf-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;}
+.ev-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.ev-cell{background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:12px;text-align:center;}
+.ev-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:4px;}
+.ev-val{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;}
+.ev-val.pos{color:var(--green);}
+.ev-val.neg{color:var(--red);}
+.ev-val.neu{color:var(--t1);}
+
+/* SHARP VS PUBLIC */
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.sp-cell{background:var(--s2);border:1px solid var(--b1);border-radius:3px;padding:14px;}
+.sp-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:8px;}
+.sp-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;margin-bottom:4px;}
+.sp-desc{font-size:11px;color:var(--t3);line-height:1.5;}
+.pub-bar{height:5px;background:var(--b1);border-radius:3px;overflow:hidden;margin-top:8px;}
+.pub-bar-fill{height:100%;border-radius:3px;transition:width 1.2s ease;}
+.pub-bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-bottom:3px;}
+
+/* ANALYSIS ACCORDION */
+.analysis-wrap{background:var(--s1);border:1px solid var(--b1);border-radius:4px;margin-bottom:16px;overflow:hidden;}
+.a-section{border-bottom:1px solid var(--b1);}
+.a-section:last-child{border-bottom:none;}
+.a-hdr{padding:12px 16px;background:var(--s2);display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+.a-icon{font-size:13px;}
+.a-title{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--t2);flex:1;}
+.a-chevron{color:var(--t3);font-size:10px;transition:transform .2s;}
+.a-chevron.open{transform:rotate(180deg);}
+.a-body{padding:16px;display:none;font-size:12px;line-height:1.7;color:var(--t2);}
+.a-body.open{display:block;}
+.a-body p{margin-bottom:8px;}
+.a-body p:last-child{margin-bottom:0;}
+
+/* LAST 3 */
+.f3-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.f3-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;margin-bottom:8px;font-size:13px;}
+.f3-fight{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--b1);}
+.f3-fight:last-child{border-bottom:none;}
+.f3-note{font-size:10px;color:var(--t3);padding:2px 0 5px 0;}
+
+/* ROI GRID */
+.roi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.roi-cell{background:var(--s1);border:1px solid var(--b1);border-radius:3px;padding:14px;text-align:center;}
+.roi-label{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:6px;}
+.roi-val{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;}
+
+/* BET LOG */
+.bet-table{width:100%;border-collapse:collapse;font-size:12px;}
+.bet-table th{font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;padding:8px 10px;text-align:left;border-bottom:1px solid var(--b1);}
+.bet-table td{padding:9px 10px;border-bottom:1px solid rgba(26,32,53,0.5);color:var(--t2);vertical-align:middle;}
+.bet-table tr:last-child td{border-bottom:none;}
+.rbadge{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:2px;}
+.rbadge.win{background:var(--green-dim);color:var(--green);border:1px solid rgba(46,204,113,0.3);}
+.rbadge.loss{background:var(--red-dim);color:var(--red);border:1px solid rgba(230,57,70,0.3);}
+.rbadge.pending{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(244,167,42,0.3);}
+
+/* ALERTS */
+.alert{padding:11px 14px;font-size:12px;border-left:3px solid;margin-bottom:12px;color:var(--t2);border-radius:0 3px 3px 0;}
+.alert.green{border-color:var(--green);background:var(--green-dim);}
+.alert.red{border-color:var(--red);background:var(--red-dim);}
+.alert.gold{border-color:var(--gold);background:var(--gold-dim);}
+.alert.blue{border-color:var(--blue);background:var(--blue-dim);}
+
+/* SPIN */
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.15);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.hidden{display:none!important;}
+
+/* PROFILE GRID */
+.prof-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.prof-name{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;margin-bottom:8px;font-size:13px;}
+
+@media(max-width:640px){
+  .row2,.row3,.row4{grid-template-columns:1fr;}
+  .fighters-row{gap:8px;}
+  .fighter-name{font-size:20px;}
+  .fighter-prob{font-size:32px;}
+  .odds-grid{grid-template-columns:1fr 1fr;}
+  .roi-grid{grid-template-columns:1fr 1fr;}
+  .ev-row{grid-template-columns:1fr 1fr;}
+  .logo{font-size:36px;}
+  .sp-grid,.f3-grid,.prof-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="logo">SHARP<em>EDGE</em></div>
+    <div class="logo-sub">UFC · Kalshi Prediction Market Analyzer</div>
+  </div>
+  <div class="vtag">V2.0</div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker" style="margin-bottom:28px;">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="dot"></span>5-Search Deep Intel</span>
+    <span class="ticker-item"><span class="dot"></span>DK / FanDuel Odds Compare</span>
+    <span class="ticker-item"><span class="dot"></span>Last 3 Fights Breakdown</span>
+    <span class="ticker-item"><span class="dot"></span>Injury &amp; Weight Cut Scan</span>
+    <span class="ticker-item"><span class="dot"></span>Sharp Money Tracker</span>
+    <span class="ticker-item"><span class="dot"></span>1-10 Confidence + EV Calc</span>
+    <span class="ticker-item"><span class="dot"></span>Contrarian Phase</span>
+    <span class="ticker-item"><span class="dot"></span>CFTC Regulated · Kalshi</span>
+    <span class="ticker-item"><span class="dot"></span>5-Search Deep Intel</span>
+    <span class="ticker-item"><span class="dot"></span>DK / FanDuel Odds Compare</span>
+    <span class="ticker-item"><span class="dot"></span>Last 3 Fights Breakdown</span>
+    <span class="ticker-item"><span class="dot"></span>Injury &amp; Weight Cut Scan</span>
+    <span class="ticker-item"><span class="dot"></span>Sharp Money Tracker</span>
+    <span class="ticker-item"><span class="dot"></span>1-10 Confidence + EV Calc</span>
+    <span class="ticker-item"><span class="dot"></span>Contrarian Phase</span>
+    <span class="ticker-item"><span class="dot"></span>CFTC Regulated · Kalshi</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(&#39;analyze&#39;,this)">Analyze</div>
+  <div class="tab" onclick="switchTab(&#39;tracker&#39;,this)">Bet Tracker</div>
+</div>
+
+<!-- ══════════════════ TAB: ANALYZE ══════════════════ -->
+<div id="tab-analyze">
+
+  <div class="slabel" style="margin-top:0;">Claude API Key</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row2">
+        <div class="field">
+          <div class="label">API Key (required)</div>
+          <input type="password" id="claudeKey" placeholder="sk-ant-...">
+        </div>
+        <div class="field">
+          <div class="label">Connection</div>
+          <button class="btn btn-outline" onclick="testKey()" style="width:100%;justify-content:center;margin-top:2px;">Test Key</button>
+        </div>
+      </div>
+      <div id="keyStatus" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div class="slabel">Fight Setup</div>
+  <div class="card">
+    <div class="card-hdr">Fighters + Kalshi pricing + sportsbook lines</div>
+    <div class="card-body">
+      <div class="row2">
+        <div class="field">
+          <div class="label">Fighter 1 (Yes contract)</div>
+          <input type="text" id="f1" placeholder="e.g. Israel Adesanya">
+        </div>
+        <div class="field">
+          <div class="label">Fighter 2</div>
+          <input type="text" id="f2" placeholder="e.g. Joe Pyfer">
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field">
+          <div class="label">Fighter 1 — Kalshi Yes (¢)</div>
+          <input type="number" id="price1" placeholder="e.g. 58" min="1" max="99">
+        </div>
+        <div class="field">
+          <div class="label">Fighter 1 — DraftKings (American)</div>
+          <input type="text" id="dk1" placeholder="e.g. -145 or +120">
+        </div>
+        <div class="field">
+          <div class="label">Fighter 1 — FanDuel (American)</div>
+          <input type="text" id="fd1" placeholder="e.g. -140 or +115">
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field">
+          <div class="label">Event</div>
+          <input type="text" id="eventName" placeholder="e.g. UFC 315">
+        </div>
+        <div class="field">
+          <div class="label">Weight Class</div>
+          <select id="weightClass">
+            <option value="">Select...</option>
+            <option>Strawweight</option><option>Flyweight</option><option>Bantamweight</option>
+            <option>Featherweight</option><option>Lightweight</option><option>Welterweight</option>
+            <option>Middleweight</option><option>Light Heavyweight</option><option>Heavyweight</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="label">Card Position</div>
+          <select id="cardPosition">
+            <option>Main Event</option><option>Co-Main Event</option>
+            <option>Main Card</option><option>Prelim</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="loadFight()">Load Fight</button>
+    </div>
+  </div>
+
+  <!-- FIGHT DISPLAY -->
+  <div id="fightDisplay" class="hidden">
+
+    <div class="fight-card">
+      <div class="fighters-row">
+        <div class="fighter-block">
+          <div class="fighter-name rc" id="dF1"></div>
+          <div class="fighter-prob rc" id="dP1"></div>
+          <div class="fighter-label">Kalshi Yes</div>
+        </div>
+        <div>
+          <div class="vs">VS</div>
+          <div class="evname" id="dEvent"></div>
+        </div>
+        <div class="fighter-block">
+          <div class="fighter-name bc" id="dF2"></div>
+          <div class="fighter-prob bc" id="dP2"></div>
+          <div class="fighter-label">Kalshi Yes</div>
+        </div>
+      </div>
+
+      <div class="slabel" style="margin-top:0;">Odds Comparison</div>
+      <div class="odds-grid" id="oddsGrid"></div>
+      <div id="edgeAlert"></div>
+    </div>
+
+    <button class="btn btn-primary btn-full" id="analyzeBtn" onclick="runAnalysis()" style="margin-bottom:16px;">
+      ⚡ Run 2-Phase Deep Analysis
+    </button>
+
+    <!-- PHASE PROGRESS -->
+    <div id="phaseProgress" class="hidden">
+      <div class="slabel">Analysis Progress</div>
+      <div class="progress-steps">
+        <div class="step" id="stp1">1 · Profiles</div>
+        <div class="step" id="stp2">2 · Last 3</div>
+        <div class="step" id="stp3">3 · Injuries</div>
+        <div class="step" id="stp4">4 · Lines</div>
+        <div class="step" id="stp5">5 · Contrarian</div>
+      </div>
+      <div class="phase-log" id="phaseLog"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="resultsWrap" class="hidden">
+
+      <div class="slabel">Verdict</div>
+      <div class="verdict-card">
+        <div class="verdict-top">
+          <div>
+            <div style="font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:4px;">Sharp Lean</div>
+            <div class="verdict-lean" id="vLean">—</div>
+            <div style="font-size:12px;color:var(--t2);margin-top:4px;" id="vMethod">—</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="conf-label">Confidence</div>
+            <div class="conf-score" id="vConf">—</div>
+            <div class="conf-label">/10</div>
+          </div>
+        </div>
+        <div class="ev-row">
+          <div class="ev-cell"><div class="ev-label">Kalshi Implied</div><div class="ev-val neu" id="evImpl">—</div></div>
+          <div class="ev-cell"><div class="ev-label">True Prob Est.</div><div class="ev-val" id="evTrue">—</div></div>
+          <div class="ev-cell"><div class="ev-label">Edge (EV)</div><div class="ev-val" id="evEdge">—</div></div>
+        </div>
+      </div>
+
+      <div class="slabel">Sharp vs Public</div>
+      <div class="sp-grid" id="spGrid"></div>
+
+      <div class="slabel">Full Analysis</div>
+      <div class="analysis-wrap" id="analysisSections"></div>
+
+      <div class="slabel">Log This Bet</div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row3">
+            <div class="field">
+              <div class="label">Fighter Backed</div>
+              <input type="text" id="logFighter" placeholder="Who you bet">
+            </div>
+            <div class="field">
+              <div class="label">Kalshi Price (¢)</div>
+              <input type="number" id="logPrice" placeholder="58">
+            </div>
+            <div class="field">
+              <div class="label">Contracts ($)</div>
+              <input type="number" id="logContracts" placeholder="10">
+            </div>
+          </div>
+          <button class="btn btn-gold btn-full" onclick="logBet()">Log Bet</button>
+        </div>
+      </div>
+
+    </div><!-- /resultsWrap -->
+  </div><!-- /fightDisplay -->
+
+</div><!-- /tab-analyze -->
+
+<!-- ══════════════════ TAB: TRACKER ══════════════════ -->
+<div id="tab-tracker" class="hidden">
+
+  <div class="slabel" style="margin-top:0;">Performance</div>
+  <div class="roi-grid">
+    <div class="roi-cell"><div class="roi-label">Record</div><div class="roi-val" id="sRec">0-0</div></div>
+    <div class="roi-cell"><div class="roi-label">ROI</div><div class="roi-val" id="sRoi" style="color: var(--green);">0%</div></div>
+    <div class="roi-cell"><div class="roi-label">P/L</div><div class="roi-val" id="sPL" style="color: var(--green);">+$0.00</div></div>
+    <div class="roi-cell"><div class="roi-label">Avg Conf</div><div class="roi-val" id="sConf">—</div></div>
+  </div>
+
+  <div class="slabel">Add Bet</div>
+  <div class="card">
+    <div class="card-body">
+      <div class="row4">
+        <div class="field"><div class="label">Fighter</div><input type="text" id="tk_f" placeholder="Name"></div>
+        <div class="field"><div class="label">Event</div><input type="text" id="tk_e" placeholder="UFC 315"></div>
+        <div class="field"><div class="label">Price (¢)</div><input type="number" id="tk_p" placeholder="58"></div>
+        <div class="field"><div class="label">Contracts ($)</div><input type="number" id="tk_c" placeholder="10"></div>
+      </div>
+      <div class="row3">
+        <div class="field">
+          <div class="label">Result</div>
+          <select id="tk_r"><option value="pending">Pending</option><option value="win">Win</option><option value="loss">Loss</option></select>
+        </div>
+        <div class="field"><div class="label">Confidence</div><input type="number" id="tk_cf" placeholder="7" min="1" max="10"></div>
+        <div class="field"><div class="label">Notes</div><input type="text" id="tk_n" placeholder="Optional"></div>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="addTrackerBet()">Add to Log</button>
+    </div>
+  </div>
+
+  <div class="slabel">Bet Log</div>
+  <div class="card">
+    <div style="overflow-x:auto;">
+      <table class="bet-table">
+        <thead>
+          <tr>
+            <th>Fighter</th><th>Event</th><th>Price</th><th>Size</th><th>Conf</th><th>P/L</th><th>Result</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="betBody"><tr><td colspan="8" style="text-align:center;padding:24px;color:var(--t3);">No bets logged yet</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /tab-tracker -->
+
+</div><!-- /wrap -->
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────────────
+let fight = null;
+let bets = JSON.parse(localStorage.getItem('se_bets_v2') || '[]');
+let lastA = null;
+
+// ── TABS ───────────────────────────────────────────────────────────────
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-analyze').classList.toggle('hidden', name !== 'analyze');
+  document.getElementById('tab-tracker').classList.toggle('hidden', name !== 'tracker');
+  if (name === 'tracker') renderLog();
+}
+
+// ── ODDS UTILS ─────────────────────────────────────────────────────────
+function amToImpl(odds) {
+  const o = parseInt(odds);
+  if (isNaN(o)) return null;
+  return o > 0 ? 100/(o+100) : Math.abs(o)/(Math.abs(o)+100);
+}
+
+// ── KEY TEST ───────────────────────────────────────────────────────────
+async function testKey() {
+  const key = document.getElementById('claudeKey').value.trim();
+  if (!key) { showStat('keyStatus','Enter your API key.','red'); return; }
+  const btn = event.target;
+  btn.innerHTML = '<span class="spin"></span>'; btn.disabled = true;
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:5,messages:[{role:'user',content:'Hi'}]})
+    });
+    const d = await r.json();
+    showStat('keyStatus', r.ok ? '✓ Key valid — ready to analyze.' : `✗ Error: ${d.error?.message||'Invalid key'}`, r.ok ? 'green' : 'red');
+  } catch(e) { showStat('keyStatus','✗ Connection error: ' + e.message,'red'); }
+  btn.innerHTML = 'Test Key'; btn.disabled = false;
+}
+
+function showStat(id, msg, type) {
+  const el = document.getElementById(id);
+  el.className = 'alert ' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ── LOAD FIGHT ─────────────────────────────────────────────────────────
+function loadFight() {
+  const f1 = document.getElementById('f1').value.trim();
+  const f2 = document.getElementById('f2').value.trim();
+  const p1 = parseFloat(document.getElementById('price1').value);
+  if (!f1||!f2||isNaN(p1)) { alert('Enter both fighters and Fighter 1 Kalshi price.'); return; }
+
+  const p2 = Math.round((100 - p1) * 10) / 10;
+  const dk1 = document.getElementById('dk1').value.trim();
+  const fd1 = document.getElementById('fd1').value.trim();
+  const ev = document.getElementById('eventName').value.trim() || 'UFC Event';
+  const wc = document.getElementById('weightClass').value;
+  const pos = document.getElementById('cardPosition').value;
+
+  fight = { f1, f2, p1, p2, dk1, fd1, ev, wc, pos };
+
+  document.getElementById('dF1').textContent = f1.split(' ').pop().toUpperCase();
+  document.getElementById('dF2').textContent = f2.split(' ').pop().toUpperCase();
+  document.getElementById('dP1').textContent = p1 + '¢';
+  document.getElementById('dP2').textContent = p2 + '¢';
+  document.getElementById('dEvent').textContent = ev + (wc ? ' · '+wc : '') + ' · ' + pos;
+
+  buildOddsGrid();
+  document.getElementById('fightDisplay').classList.remove('hidden');
+  document.getElementById('resultsWrap').classList.add('hidden');
+  document.getElementById('phaseProgress').classList.add('hidden');
+  document.getElementById('fightDisplay').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function buildOddsGrid() {
+  const { f1, f2, p1, p2, dk1, fd1 } = fight;
+  const n1 = f1.split(' ').pop();
+  const dkI = amToImpl(dk1);
+  const fdI = amToImpl(fd1);
+
+  const cells = [
+    { label:`Kalshi · ${n1}`, val:`${p1}¢`, sub:`${p1}% implied`, cls:'neu' },
+    { label:`DraftKings · ${n1}`, val:dk1||'—', sub:dkI?(dkI*100).toFixed(1)+'% implied':'Not entered', cls:'neu' },
+    { label:`FanDuel · ${n1}`, val:fd1||'—', sub:fdI?(fdI*100).toFixed(1)+'% implied':'Not entered', cls:'neu' },
+  ];
+
+  document.getElementById('oddsGrid').innerHTML = cells.map(c=>`
+    <div class="odds-cell">
+      <div class="odds-cell-label">${c.label}</div>
+      <div class="odds-cell-val ${c.cls}">${c.val}</div>
+      <div class="odds-cell-sub">${c.sub}</div>
+    </div>
+  `).join('');
+
+  const ea = document.getElementById('edgeAlert');
+  if (dkI && Math.abs(p1/100 - dkI) > 0.05) {
+    const diff = ((p1/100 - dkI)*100).toFixed(1);
+    const dir = diff > 0
+      ? `Kalshi has ${n1} ${Math.abs(diff)}% HIGHER than DraftKings`
+      : `Kalshi has ${n1} ${Math.abs(diff)}% LOWER than DraftKings`;
+    ea.innerHTML = `<div class="alert gold">⚡ Line Gap: ${dir} — potential value. Investigate.</div>`;
+  } else { ea.innerHTML = ''; }
+}
+
+// ── PHASE LOG ──────────────────────────────────────────────────────────
+function logPhase(msg, st='active') {
+  const log = document.getElementById('phaseLog');
+  const icon = st==='done' ? '✓' : '→';
+  const div = document.createElement('div');
+  div.className = 'phase-entry ' + st;
+  div.innerHTML = `<span class="pi">${icon}</span><span>${msg}</span>`;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+function setStep(n, st) {
+  const el = document.getElementById('stp'+n);
+  if (!el) return;
+  el.classList.remove('active','done');
+  if (st) el.classList.add(st);
+}
+
+// ── ANALYSIS ───────────────────────────────────────────────────────────
+async function runAnalysis() {
+  if (!fight) return;
+  const key = document.getElementById('claudeKey').value.trim();
+  if (!key) { alert('Enter your Claude API key.'); return; }
+
+  const btn = document.getElementById('analyzeBtn');
+  btn.innerHTML = '<span class="spin"></span> Initializing...';
+  btn.disabled = true;
+
+  document.getElementById('phaseProgress').classList.remove('hidden');
+  document.getElementById('resultsWrap').classList.add('hidden');
+  document.getElementById('phaseLog').innerHTML = '';
+  for (let i=1;i<=5;i++) setStep(i,'');
+  setStep(1,'active');
+  logPhase('Phase 1 · Gathering fighter data via 5 targeted searches...');
+
+  const { f1, f2, p1, p2, dk1, fd1, ev, wc, pos } = fight;
+  const dkImpl = amToImpl(dk1);
+  const fdImpl = amToImpl(fd1);
+
+  const prompt = `You are a sharp UFC analyst helping a Kalshi prediction market trader find value bets. Run a deep 2-phase analysis.
+
+FIGHT: ${f1} vs ${f2}
+EVENT: ${ev}${wc?' | '+wc:''} | ${pos}
+KALSHI: ${f1} Yes=${p1}¢ (${p1}% implied) | ${f2} Yes=${p2}¢ (${p2}% implied)
+${dk1?`DRAFTKINGS: ${f1}=${dk1} (${(dkImpl*100).toFixed(1)}% implied)`:''}
+${fd1?`FANDUEL: ${f1}=${fd1} (${(fdImpl*100).toFixed(1)}% implied)`:''}
+
+PHASE 1 — DATA GATHERING (run all 5 searches):
+Search 1: "${f1} MMA fighter record stats recent fights 2024 2025"
+Search 2: "${f2} MMA fighter record stats recent fights 2024 2025"
+Search 3: "${f1} vs ${f2} ${ev} fight preview analysis prediction"
+Search 4: "${f1} ${f2} injury weight cut news ${ev}"
+Search 5: "${f1} ${f2} betting odds public money sharp action line movement"
+
+PHASE 2 — CONTRARIAN SEARCH (run this search):
+Search 6: "${f2} upset ${f1} why underdog could win" OR "${f1} problems weaknesses recent"
+Now make the best possible case for the undervalued fighter.
+
+After completing all searches, return ONLY a valid JSON object, no markdown, no text outside the JSON:
+
+{
+  "f1": {
+    "name": "${f1}",
+    "record": "W-L-D",
+    "style": "fighting style",
+    "recentForm": "recent form in 1-2 sentences",
+    "lastThree": [
+      {"opp":"name","res":"W","method":"KO/TKO","round":1,"notes":"brief context"},
+      {"opp":"name","res":"L","method":"Decision","round":5,"notes":"brief context"},
+      {"opp":"name","res":"W","method":"Sub","round":2,"notes":"brief context"}
+    ],
+    "strengths": "key strengths",
+    "weaknesses": "key weaknesses",
+    "injuryFlags": "any injury/weight cut flags or NONE"
+  },
+  "f2": {
+    "name": "${f2}",
+    "record": "W-L-D",
+    "style": "fighting style",
+    "recentForm": "recent form in 1-2 sentences",
+    "lastThree": [
+      {"opp":"name","res":"W","method":"KO/TKO","round":1,"notes":"brief context"},
+      {"opp":"name","res":"W","method":"Decision","round":3,"notes":"brief context"},
+      {"opp":"name","res":"L","method":"Sub","round":2,"notes":"brief context"}
+    ],
+    "strengths": "key strengths",
+    "weaknesses": "key weaknesses",
+    "injuryFlags": "any injury/weight cut flags or NONE"
+  },
+  "matchup": "2-3 sentence stylistic breakdown — where does each fighter win?",
+  "marketAnalysis": "Is Kalshi pricing accurate vs DK/FD? Where is the market wrong?",
+  "lineGap": "specific analysis of any gap between Kalshi and sportsbooks",
+  "publicBetting": {
+    "publicPct_f1": 60,
+    "sharpSide": "fighter name",
+    "sharpReason": "why sharps like this side",
+    "lineMovement": "any notable steam or reverse line movement"
+  },
+  "contrarian": {
+    "fade": "fighter being overvalued",
+    "fadeReason": "why they're overvalued",
+    "contrarianPick": "undervalued fighter",
+    "contrarianCase": "strongest case for the underdog"
+  },
+  "verdict": {
+    "lean": "${f1} or ${f2} or EVEN",
+    "confidence": 7,
+    "method": "KO/TKO, Submission, or Decision",
+    "timing": "early/mid/late rounds",
+    "kalshiPlay": "exact contract and price to buy",
+    "trueProbEst": 62,
+    "edgePct": 4.0,
+    "sizing": "SMALL, MEDIUM, or LARGE",
+    "risks": "2-3 specific risks to this pick"
+  },
+  "sharpSummary": "2-3 sentence summary a Kalshi trader would actually use"
+}`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-beta':'web-search-2025-03-05'
+      },
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:4000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}: ${JSON.stringify(data)}`);
+
+    // Animate steps based on tool calls
+    let sc = 0;
+    for (const block of data.content) {
+      if (block.type === 'tool_use' && block.name === 'web_search') {
+        sc++;
+        const stepMap = {1:[1,'Fighter Profiles'],2:[2,'Last 3 Fights'],3:[2,'Last 3 Fights'],4:[3,'Injuries/Camp'],5:[4,'Betting Lines'],6:[5,'Contrarian']};
+        const [sn, sl] = stepMap[sc] || [5,'Contrarian'];
+        for(let i=1;i<sn;i++) setStep(i,'done');
+        setStep(sn,'active');
+        logPhase(`Search ${sc}: ${block.input?.query||'—'}`, 'done');
+        if(sc===4) logPhase('Phase 2 · Running contrarian analysis...','active');
+      }
+    }
+    for(let i=1;i<=5;i++) setStep(i,'done');
+    logPhase('Complete. Parsing results...','done');
+
+    // Parse JSON
+    const txt = data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+    let analysis;
+    try {
+      const clean = txt.replace(/```json|```/g,'').trim();
+      const si = clean.indexOf('{');
+      const ei = clean.lastIndexOf('}');
+      analysis = JSON.parse(clean.slice(si, ei+1));
+    } catch(pe) {
+      analysis = fallbackAnalysis(txt);
+    }
+
+    lastA = analysis;
+    renderResults(analysis);
+
+  } catch(err) {
+    showStat('keyStatus','Error: '+err.message,'red');
+    document.getElementById('keyStatus').style.display='block';
+  }
+
+  btn.innerHTML = '⚡ Run 2-Phase Deep Analysis';
+  btn.disabled = false;
+}
+
+function fallbackAnalysis(txt) {
+  return {
+    f1:{name:fight.f1,record:'—',style:'—',recentForm:txt.slice(0,150),lastThree:[],strengths:'—',weaknesses:'—',injuryFlags:'Check manually'},
+    f2:{name:fight.f2,record:'—',style:'—',recentForm:'See raw output above.',lastThree:[],strengths:'—',weaknesses:'—',injuryFlags:'Check manually'},
+    matchup:'Analysis parsing failed. Raw data above.',
+    marketAnalysis:'—',lineGap:'—',
+    publicBetting:{publicPct_f1:50,sharpSide:'—',sharpReason:'—',lineMovement:'—'},
+    contrarian:{fade:'—',fadeReason:'—',contrarianPick:'—',contrarianCase:'—'},
+    verdict:{lean:fight.f1,confidence:5,method:'Decision',timing:'championship',kalshiPlay:`${fight.f1} Yes at ${fight.p1}¢`,trueProbEst:fight.p1,edgePct:0,sizing:'SMALL',risks:'Incomplete data — verify manually'},
+    sharpSummary:txt.slice(0,200)
+  };
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────
+function renderResults(a) {
+  const { f1, f2, matchup, marketAnalysis, lineGap, publicBetting, contrarian, verdict, sharpSummary } = a;
+
+  // VERDICT
+  const lean = verdict.lean || '—';
+  const lEl = document.getElementById('vLean');
+  lEl.textContent = lean.toUpperCase();
+  const isF1 = lean.toLowerCase().includes(fight.f1.split(' ').pop().toLowerCase());
+  const isEven = lean.toLowerCase() === 'even';
+  lEl.className = 'verdict-lean ' + (isEven ? 'split' : isF1 ? 'rc' : 'bc');
+
+  document.getElementById('vMethod').textContent =
+    (verdict.method||'—') + ' · ' + (verdict.timing||'—') + ' · ' + (verdict.sizing||'—') + ' SIZE · ' + (verdict.kalshiPlay||'—');
+
+  const conf = parseInt(verdict.confidence)||5;
+  const cEl = document.getElementById('vConf');
+  cEl.textContent = conf+'/10';
+  cEl.className = 'conf-score '+(conf>=7?'high':conf>=5?'med':'low');
+
+  const impl = fight.p1;
+  const trueP = parseFloat(verdict.trueProbEst)||impl;
+  const edge = parseFloat(verdict.edgePct)||(trueP-impl);
+
+  document.getElementById('evImpl').textContent = impl+'%';
+  const tEl = document.getElementById('evTrue');
+  tEl.textContent = trueP+'%';
+  tEl.className = 'ev-val '+(trueP>impl?'pos':'neg');
+  const eEl = document.getElementById('evEdge');
+  eEl.textContent = (edge>=0?'+':'')+edge.toFixed(1)+'%';
+  eEl.className = 'ev-val '+(edge>3?'pos':edge>0?'neu':'neg');
+
+  // SHARP VS PUBLIC
+  const pb = publicBetting || {};
+  const pubPct = parseInt(pb.publicPct_f1)||50;
+  const n1 = fight.f1.split(' ').pop();
+  const n2 = fight.f2.split(' ').pop();
+  document.getElementById('spGrid').innerHTML = `
+    <div class="sp-cell">
+      <div class="sp-label">Public Betting %</div>
+      <div class="sp-val" style="color:var(--blue)">${pubPct}% ${n1}</div>
+      <div class="pub-bar-labels"><span>${n1}</span><span>${n2}</span></div>
+      <div class="pub-bar"><div class="pub-bar-fill" style="width:${pubPct}%;background:linear-gradient(90deg,var(--red),var(--gold));"></div></div>
+      <div class="sp-desc" style="margin-top:8px;">${pb.lineMovement||'No notable movement.'}</div>
+    </div>
+    <div class="sp-cell">
+      <div class="sp-label">Sharp Money</div>
+      <div class="sp-val" style="color:var(--gold)">${pb.sharpSide||'—'}</div>
+      <div class="sp-desc">${pb.sharpReason||'—'}</div>
+    </div>
+  `;
+
+  // ANALYSIS SECTIONS
+  const sections = [
+    { icon:'🥊', title:'Fighter Profiles', body: buildProfiles(f1,f2) },
+    { icon:'📋', title:'Last 3 Fights', body: buildLast3(f1,f2) },
+    { icon:'🏥', title:'Injuries & Weight Cut', body: `<p><strong style="color:var(--t1)">${f1.name}:</strong> ${f1.injuryFlags||'No flags.'}</p><p><strong style="color:var(--t1)">${f2.name}:</strong> ${f2.injuryFlags||'No flags.'}</p>` },
+    { icon:'🎯', title:'Matchup Breakdown', body: `<p>${matchup||'—'}</p>` },
+    { icon:'📊', title:'Market Analysis', body: `<p>${marketAnalysis||'—'}</p>${lineGap?`<p>${lineGap}</p>`:''}` },
+    { icon:'↩️', title:'Contrarian Take', body: `<p><strong style="color:var(--gold)">Fade:</strong> ${contrarian?.fade||'—'} — ${contrarian?.fadeReason||'—'}</p><p><strong style="color:var(--gold)">Contra pick:</strong> ${contrarian?.contrarianPick||'—'} — ${contrarian?.contrarianCase||'—'}</p>` },
+    { icon:'⚠️', title:'Risks', body: `<p>${verdict?.risks||'—'}</p>` },
+    { icon:'📌', title:'Sharp Summary', body: `<p style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;color:var(--t1);margin-bottom:10px;">${verdict?.kalshiPlay||'—'}</p><p>${sharpSummary||'—'}</p>` },
+  ];
+
+  document.getElementById('analysisSections').innerHTML = sections.map((s,i) => `
+    <div class="a-section">
+      <div class="a-hdr" onclick="toggleSection(this)">
+        <span class="a-icon">${s.icon}</span>
+        <span class="a-title">${s.title}</span>
+        <span class="a-chevron ${i===0?'open':''}">▾</span>
+      </div>
+      <div class="a-body ${i===0?'open':''}">${s.body}</div>
+    </div>
+  `).join('');
+
+  // Pre-fill log
+  document.getElementById('logFighter').value = lean;
+  const leanIsF1 = lean.toLowerCase().includes(fight.f1.split(' ').pop().toLowerCase());
+  document.getElementById('logPrice').value = leanIsF1 ? fight.p1 : fight.p2;
+
+  document.getElementById('resultsWrap').classList.remove('hidden');
+  document.getElementById('resultsWrap').scrollIntoView({behavior:'smooth'});
+}
+
+function buildProfiles(f1,f2) {
+  const half = (f,cls) => `
+    <div>
+      <div class="prof-name" style="color:var(${cls})">${f.name} · ${f.record||'—'}</div>
+      <p><strong style="color:var(--t1)">Style:</strong> ${f.style||'—'}</p>
+      <p><strong style="color:var(--t1)">Form:</strong> ${f.recentForm||'—'}</p>
+      <p><strong style="color:var(--green)">+ </strong>${f.strengths||'—'}</p>
+      <p><strong style="color:var(--red)">− </strong>${f.weaknesses||'—'}</p>
+    </div>
+  `;
+  return `<div class="prof-grid">${half(f1,'--red')}${half(f2,'--blue')}</div>`;
+}
+
+function buildLast3(f1,f2) {
+  const col = (f,cls) => {
+    const rows = (f.lastThree||[]).map(ft=>`
+      <div class="f3-fight">
+        <span class="rbadge ${ft.res==='W'?'win':'loss'}">${ft.res}</span>
+        <span style="flex:1;font-size:12px;">${ft.opp||'—'}</span>
+        <span style="font-size:10px;color:var(--t3);">${ft.method||'—'} R${ft.round||'?'}</span>
+      </div>
+      ${ft.notes?`<div class="f3-note">${ft.notes}</div>`:''}
+    `).join('');
+    return `<div><div class="f3-name" style="color:var(${cls})">${f.name}</div>${rows||'<p style="color:var(--t3)">No data found.</p>'}</div>`;
+  };
+  return `<div class="f3-grid">${col(f1,'--red')}${col(f2,'--blue')}</div>`;
+}
+
+function toggleSection(hdr) {
+  const body = hdr.nextElementSibling;
+  const chevron = hdr.querySelector('.a-chevron');
+  const open = body.classList.contains('open');
+  body.classList.toggle('open',!open);
+  chevron.classList.toggle('open',!open);
+}
+
+// ── BET LOGGING ────────────────────────────────────────────────────────
+function logBet() {
+  const fighter = document.getElementById('logFighter').value.trim();
+  const price = parseFloat(document.getElementById('logPrice').value);
+  const contracts = parseFloat(document.getElementById('logContracts').value);
+  if (!fighter||isNaN(price)||isNaN(contracts)) { alert('Fill all fields to log.'); return; }
+  bets.unshift({ id:Date.now(), fighter, event:fight?.ev||'—', price, contracts, result:'pending', confidence:lastA?.verdict?.confidence||'—', notes:'', date:new Date().toLocaleDateString() });
+  localStorage.setItem('se_bets_v2',JSON.stringify(bets));
+  document.getElementById('logContracts').value='';
+  const d=document.createElement('div');
+  d.className='alert green';
+  d.textContent='✓ Bet logged. Check the Bet Tracker tab.';
+  document.getElementById('logContracts').parentElement.parentElement.parentElement.insertBefore(d,document.getElementById('logContracts').parentElement.parentElement);
+  setTimeout(()=>d.remove(),3000);
+}
+
+function addTrackerBet() {
+  const f=document.getElementById('tk_f').value.trim();
+  const p=parseFloat(document.getElementById('tk_p').value);
+  const c=parseFloat(document.getElementById('tk_c').value);
+  if(!f||isNaN(p)||isNaN(c)){alert('Fighter, price, and contracts required.');return;}
+  bets.unshift({
+    id:Date.now(),
+    fighter:f,
+    event:document.getElementById('tk_e').value||'—',
+    price:p,contracts:c,
+    result:document.getElementById('tk_r').value,
+    confidence:document.getElementById('tk_cf').value||'—',
+    notes:document.getElementById('tk_n').value,
+    date:new Date().toLocaleDateString()
+  });
+  localStorage.setItem('se_bets_v2',JSON.stringify(bets));
+  renderLog();
+  ['tk_f','tk_e','tk_p','tk_c','tk_cf','tk_n'].forEach(id=>document.getElementById(id).value='');
+}
+
+function updateResult(id,val) {
+  const b=bets.find(x=>x.id===id);
+  if(b){b.result=val;localStorage.setItem('se_bets_v2',JSON.stringify(bets));renderLog();}
+}
+function deleteBet(id) {
+  bets=bets.filter(x=>x.id!==id);
+  localStorage.setItem('se_bets_v2',JSON.stringify(bets));
+  renderLog();
+}
+
+function calcPL(b) {
+  if(b.result==='win') return +(b.contracts*(100-b.price)/100).toFixed(2);
+  if(b.result==='loss') return -(b.contracts*b.price/100).toFixed(2);
+  return null;
+}
+
+function renderLog() {
+  const body=document.getElementById('betBody');
+  if(!bets.length){
+    body.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--t3);">No bets logged yet</td></tr>';
+    updateStats();return;
+  }
+  body.innerHTML=bets.map(b=>{
+    const pl=calcPL(b);
+    const plStr=pl!==null?(pl>=0?'+$':'-$')+Math.abs(pl).toFixed(2):'—';
+    const plCls=pl>0?'style="color:var(--green)"':pl<0?'style="color:var(--red)"':'';
+    return `<tr>
+      <td style="color:var(--t1)">${b.fighter}</td>
+      <td>${b.event}</td>
+      <td>${b.price}¢</td>
+      <td>$${b.contracts}</td>
+      <td>${b.confidence}</td>
+      <td ${plCls}>${plStr}</td>
+      <td>
+        <select onchange="updateResult(${b.id},this.value)" style="background:transparent;border:1px solid var(--b1);color:var(--t2);font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:2px;cursor:pointer;">
+          <option value="pending" ${b.result==='pending'?'selected':''}>PENDING</option>
+          <option value="win" ${b.result==='win'?'selected':''}>WIN</option>
+          <option value="loss" ${b.result==='loss'?'selected':''}>LOSS</option>
+        </select>
+      </td>
+      <td><button onclick="deleteBet(${b.id})" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:12px;padding:2px 6px;">✕</button></td>
+    </tr>`;
+  }).join('');
+  updateStats();
+}
+
+function updateStats() {
+  const settled=bets.filter(b=>b.result!=='pending');
+  const wins=settled.filter(b=>b.result==='win').length;
+  const losses=settled.filter(b=>b.result==='loss').length;
+  let totalPL=0,totalStaked=0;
+  bets.forEach(b=>{
+    const pl=calcPL(b);
+    if(pl!==null){totalPL+=pl;totalStaked+=b.contracts*b.price/100;}
+  });
+  const roi=totalStaked>0?((totalPL/totalStaked)*100).toFixed(1):0;
+  const confs=bets.map(b=>parseFloat(b.confidence)).filter(c=>!isNaN(c));
+  const avgC=confs.length?(confs.reduce((a,c)=>a+c,0)/confs.length).toFixed(1):'—';
+
+  document.getElementById('sRec').textContent=wins+'-'+losses;
+  const roiEl=document.getElementById('sRoi');
+  roiEl.textContent=roi+'%';
+  roiEl.style.color=roi>=0?'var(--green)':'var(--red)';
+  const plEl=document.getElementById('sPL');
+  plEl.textContent=(totalPL>=0?'+$':'-$')+Math.abs(totalPL).toFixed(2);
+  plEl.style.color=totalPL>=0?'var(--green)':'var(--red)';
+  document.getElementById('sConf').textContent=avgC;
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────
+renderLog();
+</script>
+
+
+</body></html>
